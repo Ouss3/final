@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="projectspring" />
+        <module name="ConfigService" />
+        <module name="DiscoveryService" />
+        <module name="GatewayService" />
+      </profile>
+      <profile name="Annotation profile for DME-Service" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.36/lombok-1.18.36.jar" />
+        </processorPath>
+        <module name="PatientsService" />
+        <module name="PrescriptionsService" />
+        <module name="DME-Service" />
+        <module name="Rendez-vousService" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="ConfigService" options="-parameters" />
+      <module name="DME-Service" options="-parameters" />
+      <module name="DiscoveryService" options="-parameters" />
+      <module name="GatewayService" options="-parameters" />
+      <module name="PatientsService" options="-parameters" />
+      <module name="PrescriptionsService" options="-parameters" />
+      <module name="Rendez-vousService" options="-parameters" />
+      <module name="projectspring" options="-parameters" />
+    </option>
+  </component>
+</project>

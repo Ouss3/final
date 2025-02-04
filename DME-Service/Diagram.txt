@@ -1,0 +1,39 @@
++--------------------------------+          +---------------------------------+
+|        MedicalRecord           |          |        MedicalRecordDTO          |
++--------------------------------+          +---------------------------------+
+| - id: String                   |          | - patientId: String              |
+| - patientId: String            |          | - diagnosis: String              |
+| - diagnosis: String            |          | - treatments: List<String>       |
+| - treatments: List<String>     |          | - prescriptionIds: List<String>  |
+| - prescriptionIds: List<String>|          | - appointmentIds: List<String>   |
+| - appointmentIds: List<String> |          +---------------------------------+
+| - dateCreated: LocalDateTime   |                       ▲
++--------------------------------+                       |
+            ▲                                           |
+            |                                           |
+            |                           +---------------------------------+
+            |                           |    MedicalRecordController      |
+            |                           +---------------------------------+
+            |                           | + createRecord(): ResponseEntity |
+            |                           | + getRecord(id): MedicalRecordDTO|
+            |                           | + updateRecord(): ResponseEntity |
+            |                           +---------------------------------+
+            |                                           ▲
+            |                                           |
+            |                                           |
++--------------------------------+          +---------------------------------+
+|   MedicalRecordRepository      |          |     MedicalRecordService         |
++--------------------------------+          +---------------------------------+
+| + JpaRepository methods        |<---------| - repo: MedicalRecordRepository |
++--------------------------------+          | - patientClient: PatientServiceClient |
+                                            | - prescriptionClient: PrescriptionClient |
+                                            | - appointmentClient: AppointmentClient |
+                                            +---------------------------------+
+                                                            ▲
+                                                            |
+                                                            |
+                                            +---------------------------------+
+                                            |       PatientServiceClient      |
+                                            +---------------------------------+
+                                            | + getPatient(id): PatientDTO    |
+                                            +---------------------------------+

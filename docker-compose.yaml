@@ -1,0 +1,159 @@
+services:
+  postgres-service:
+    image: postgres
+    container_name: postgres-service
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: rendezvous
+      POSTGRES_USER: ouss
+      POSTGRES_PASSWORD: k1234
+    ports:
+      - '5432:5432'
+    expose:
+      - '5432'
+    healthcheck:
+      test: "exit 0"
+  pgadmin4:
+      image: dpage/pgadmin4
+      container_name: pgadmin4
+      restart: always
+      ports:
+        - "8899:80"
+      environment:
+        PGADMIN_DEFAULT_EMAIL: ouss@gmail.com
+        PGADMIN_DEFAULT_PASSWORD: azer
+      volumes:
+        - pgadmin_data:/var/lib/pgadmin
+
+  mysql-db-patient:
+    image: mariadb:10.6
+    container_name: mysql-db-patient
+    restart: always
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: patient-db
+      MYSQL_USER: ouss
+      MYSQL_PASSWORD: 1234
+      MYSQL_ROOT_PASSWORD: admin
+    ports:
+      - "3307:3306"
+    expose:
+      - "3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 5s
+      retries: 10
+  mysql-db-dme:
+      image: mariadb:10.6
+      container_name: mysql-db-dme
+      restart: always
+      volumes:
+        - mysql_dme:/var/lib/mysql
+      environment:
+        MYSQL_DATABASE: dme-db
+        MYSQL_USER: ouss
+        MYSQL_PASSWORD: 1234
+        MYSQL_ROOT_PASSWORD: admin
+      ports:
+        - "3308:3306"
+      expose:
+        - "3306"
+      healthcheck:
+        test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+        timeout: 5s
+        retries: 10
+  phpmyadmin:
+        image: phpmyadmin
+        restart: always
+        ports:
+          - "9990:80"
+        environment:
+          PMA_HOSTS: mysql-db-dme,mysql-db-patient
+          PMA_PORT: 3306
+          PMA_ARBITRARY: 1
+
+
+
+  discovery-service:
+    build: ./DiscoveryService
+    container_name: discovery-service
+    ports:
+      - "8761:8761"
+    expose:
+      - "8761"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
+      interval: 30s
+
+  config-service:
+      build: ./ConfigService
+      container_name: config-service
+      ports:
+        - "9999:9999"
+      expose:
+        - "9999"
+      environment:
+        - DISCOVERY_URL=http://discovery-service:8761/eureka
+      depends_on:
+        discovery-service:
+          condition: service_healthy
+
+      healthcheck:
+        test: [ "CMD", "curl", "-f", "http://localhost:9999/actuator/health" ]
+        interval: 30s
+  patient-service:
+      build: ./PatientsService
+      container_name: pateint-service
+      ports:
+        - "8080:8080"
+      expose:
+        - "8080"
+      environment:
+        - DISCOVERY_URL=http://discovery-service:8761/eureka
+        - CONFIG_URL=http://config-service:9999
+        - DATA_SOURCE=jdbc:mysql://mysql-db-patient:3306/patient-db
+
+      depends_on:
+        config-service:
+           condition: service_healthy
+        mysql-db-patient:
+          condition: service_healthy
+
+
+      healthcheck:
+        test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+        interval: 10s
+  rendezvous-service:
+      build: ./Rendez-vousService
+      container_name: rendezvous-service
+      ports:
+        - "8081:8081"
+      expose:
+        - "8081"
+      environment:
+        - DISCOVERY_URL=http://discovery-service:8761/eureka
+        - CONFIG_URL=http://config-service:9999
+        - DATA_SOURCE=jdbc:postgresql://postgres-service:5432/rendezvous
+        - PATIENT_URL=http://patient-service:8080/patient
+      depends_on:
+        config-service:
+          condition: service_healthy
+        postgres-service:
+          condition: service_healthy
+      healthcheck:
+        test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
+        interval: 10s
+
+
+
+
+
+
+
+volumes:
+            mysql_data:
+            postgres_data:
+            pgadmin_data:
+            mysql_dme:
