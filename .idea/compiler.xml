@@ -12,7 +12,7 @@
         <module name="DiscoveryService" />
         <module name="GatewayService" />
       </profile>
-      <profile name="Annotation profile for DME-Service" enabled="true">
+      <profile name="Annotation profile for PatientsService" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />

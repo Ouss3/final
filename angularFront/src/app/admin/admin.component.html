@@ -1,0 +1,46 @@
+<div class="d-flex flex-row vh-100">
+  <!-- Set the parent container to full height -->
+
+  <nav class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 280px; ">
+    <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+
+      <span class="fs-4"><i class="bi bi-house"></i> Dashboard</span>
+    </a>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto">
+      <li *ngFor="let action of actions" class="nav-item">
+        <a
+          (click)="setCurent(action)"
+          routerLink="{{action.route}}" [class]=" action==currentAction? 'nav-link active':'nav-link text-white'"  >
+          <i class="bi bi-{{action.icon}}"></i>
+          {{action.title}}
+        </a>
+      </li>
+
+    </ul>
+    <div class="dropdown mt-auto">
+      <div class="btn-group">
+        <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+          <span >
+              {{securityService.profile?.firstName}}
+            </span>
+          <ng-template #not_logged_in>
+            Not Logged
+          </ng-template>
+        </button>
+        <ul class="dropdown-menu">
+          <li><a class="dropdown-item" href="http://localhost:8080" target="_blank">Administration</a></li>
+          <li><hr class="dropdown-divider"></li>
+<!--          <li><a class="dropdown-item" (click)="login()" >Login</a></li>-->
+<!--          <li><a class="dropdown-item" href="#"></a></li>-->
+
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" (click)="logout()"><i class="bi bi-box-arrow-right" ></i>Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  <div class="flex-grow-1 p-3">
+    <router-outlet></router-outlet>
+  </div>
+</div>
